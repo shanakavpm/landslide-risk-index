@@ -1,0 +1,82 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Data and outputs (large files)
+data/raw/
+data/interim/
+data/processed/
+outputs/figures/
+outputs/rasters/
+outputs/tables/
+outputs/vectors/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+*.pot
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Misc
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/
+.docx-render/
+.mplconfig/
+.lslrsi-*/
+
+# Dashboard deployment assets
+outputs/*
+!outputs/
+outputs/*
+!outputs/figures/
+outputs/figures/*
+!outputs/figures/*.png
+!outputs/tables/
+outputs/tables/*
+!outputs/tables/haldummulla_gn_risk_scores.csv
+!outputs/tables/analysis_metadata.json

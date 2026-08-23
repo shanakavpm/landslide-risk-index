@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "files": {
+    "chirps_1981_2024_mean_annual.tif": "89ea2f738332dfdbc2ade7fd0a7dc7b31c8327c3ce218bed5379b87d210296cd",
+    "copdem_n06e080.tif": "bfa222f4daa21161409146061c752439eefdb3c6b16264799a25dae9f8f8655f",
+    "copdem_n06e081.tif": "5df3709dcf6fe5318f86cd111af6f5605151e6b1ea41efe37a211c74d190724c",
+    "dcs_gn_housing_2024.xlsx": "db5a9af593316cfce8ac72282ebc0aba4edc91443d0afce233db09cd53d8c62a",
+    "dcs_gn_population_2024.xlsx": "2e0168c5daa43af4c4f61a55389768d5c86508ad47252a2d8c89a52986215425",
+    "dcs_haldummulla_gn_population_2024.geojson": "8d3df97ef3b24bcd33e77c624fee1b9f6e2d67ddad275c8957f822989acd18b5",
+    "nasa_global_landslide_catalog.csv": "2c4898899dd4f373c4320e121c5b655ebb5394d431fa42e57ec4828d07d48b04",
+    "osm_critical_amenities.json": "67f197737c458b4a15f4d1c387a31a195d4e0d166c5eb9fcabce5e20896b225a",
+    "osm_roads.json": "df6fac611c06f68733423d8b49f5724435ac9c694d1fb0da2b9ae98dd2eee3eb",
+    "osm_waterways.json": "85c9d4b4ae8a025b41240674ed4d0f65076f341b4c8ebe09976aba894a496e9f",
+    "soilgrids_clay_0_5cm_mean_250m.tif": "168316d6048eb8e64a625458f6fbf361000406c7082b4129304737333735fbd6",
+    "worldcover_2021_n06e078.tif": "a2de57f330a5a2e36014a3d0e86e8538f3b014d6ed8d7070165a2288a8e4b899",
+    "worldcover_2021_n06e081.tif": "484ca627ac65c6c69e0f1a5452fc7f6cb5624ce86bf17a7be9996a14442fee92"
+  }
+}

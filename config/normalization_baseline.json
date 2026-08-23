@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "study_area": "Haldummulla Divisional Secretariat Division, Badulla District, Sri Lanka",
+  "analysis_crs": "EPSG:5235",
+  "analysis_resolution_m": 30.0,
+  "method": "2nd and 98th percentile bounds from the stated baseline inputs",
+  "raster_indicators": {
+    "slope": {
+      "p02": 1.020022201538086,
+      "p98": 39.91555938720703
+    },
+    "rainfall": {
+      "p02": 1659.5205688476562,
+      "p98": 2328.511694335937
+    },
+    "local_relief": {
+      "p02": 17.87261962890625,
+      "p98": 611.7351684570312
+    },
+    "clay": {
+      "p02": 29.046554946899413,
+      "p98": 39.929202270507815
+    }
+  },
+  "exposure_indicators": {
+    "population_density": {
+      "p02": 12.13880294099807,
+      "p98": 538.1660032393193
+    },
+    "housing_density": {
+      "p02": 4.04286774379447,
+      "p98": 151.0174089076266
+    },
+    "vulnerable_population_share": {
+      "p02": 0.2894470243902439,
+      "p98": 0.38458022851465473
+    },
+    "critical_infrastructure_density": {
+      "p02": 0.0,
+      "p98": 0.8095898647462086
+    }
+  }
+}

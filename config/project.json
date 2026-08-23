@@ -1,0 +1,70 @@
+{
+  "project_name": "Haldummulla Location-Specific Landslide Risk Scoring Index",
+  "study_area": "Haldummulla Divisional Secretariat Division, Badulla District, Sri Lanka",
+  "division_name": "Haldummulla",
+  "boundary_file": "dcs_haldummulla_gn_population_2024.geojson",
+  "housing_file": "dcs_gn_housing_2024.xlsx",
+  "nasa_search_terms": ["haldummulla", "koslanda", "nikapotha"],
+  "risk_class_labels": ["Low", "Moderate", "High", "Very High"],
+  "analysis_crs": "EPSG:5235",
+  "analysis_resolution_m": 30,
+  "study_area_query": "DSD_Name='Haldummulla'",
+  "data_urls": {
+    "dcs_gn_population_feature_service": "https://services6.arcgis.com/v2E6mIH6KqVu8t9L/arcgis/rest/services/GND_POP_DATA_update/FeatureServer/0/query",
+    "dcs_gn_population_excel": "https://www.statistics.gov.lk/Population/StaticalInformation/CPH2024/GN_population_excel",
+    "dcs_gn_housing_excel": "https://www.statistics.gov.lk/Population/StaticalInformation/CPH2024/GN_housing_excel",
+    "dem_n06e080": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N06_00_E080_00_DEM/Copernicus_DSM_COG_10_N06_00_E080_00_DEM.tif",
+    "dem_n06e081": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N06_00_E081_00_DEM/Copernicus_DSM_COG_10_N06_00_E081_00_DEM.tif",
+    "chirps_1981_2024_mean_annual": "https://data.chc.ucsb.edu/products/CHIRPS-2.0/global_annual/tifs/chirps-v2.0.1981-2024.44yrs.tif",
+    "worldcover_n06e078": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N06E078_Map.tif",
+    "worldcover_n06e081": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N06E081_Map.tif",
+    "soilgrids_wcs": "https://maps.isric.org/mapserv?map=/map/clay.map",
+    "nasa_glc_csv": "https://data.nasa.gov/docs/legacy/Global_Landslide_Catalog_Export/Global_Landslide_Catalog_Export_rows.csv"
+  },
+  "susceptibility_weights": {
+    "slope": 0.30,
+    "rainfall": 0.20,
+    "landcover": 0.15,
+    "local_relief": 0.05,
+    "clay": 0.10,
+    "road_proximity": 0.10,
+    "stream_proximity": 0.10
+  },
+  "exposure_weights": {
+    "population_density": 0.45,
+    "housing_density": 0.25,
+    "vulnerable_population_share": 0.15,
+    "critical_infrastructure_density": 0.15
+  },
+  "risk_component_weights": {
+    "susceptibility": 0.70,
+    "exposure": 0.30
+  },
+  "landcover_risk_scores": {
+    "10": 0.20,
+    "20": 0.50,
+    "30": 0.55,
+    "40": 0.75,
+    "50": 0.65,
+    "60": 1.00,
+    "70": 0.20,
+    "80": 0.00,
+    "90": 0.40,
+    "95": 0.10,
+    "100": 0.40
+  },
+  "distance_decay_m": {
+    "road": 500,
+    "stream": 300
+  },
+  "weighting_notes": {
+    "method": "Transparent provisional expert-judgement weighting for relative screening; weights must be justified and, where possible, locally reviewed before operational use.",
+    "terrain_collinearity_safeguard": "Slope and 1 km local relief are retained because they represent local gradient and broader terrain ruggedness, but local relief is capped at 0.05 because their sampled Spearman correlation is about 0.62.",
+    "validation_status": "The NASA catalogue is used only as a spatial plausibility check; it is too sparse and imprecise for calibration or accuracy validation."
+  },
+  "sensitivity": {
+    "iterations": 500,
+    "dirichlet_concentration": 100,
+    "random_seed": 7003
+  }
+}
