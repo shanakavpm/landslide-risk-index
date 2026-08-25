@@ -67,7 +67,7 @@ with st.sidebar:
     )
     st.download_button(
         "Download GN results",
-        data=RISK_DATA.read_bytes(),
+        data=risk_data.to_csv(index=False).encode("utf-8"),
         file_name="haldummulla_gn_risk_scores.csv",
         mime="text/csv",
     )

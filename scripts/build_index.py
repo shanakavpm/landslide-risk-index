@@ -101,6 +101,7 @@ EXPECTED_OUTPUTS = {
     "tables/indicator_spearman_correlation.csv",
     "tables/landcover_composition.csv",
     "tables/nasa_catalogue_plausibility_check.csv",
+    "tables/preprocessing_quality_audit.csv",
     "tables/raster_indicator_summary.csv",
     "tables/sensitivity_summary.csv",
     "rasters/landslide_susceptibility_0_100.tif",
@@ -161,6 +162,17 @@ def load_normalization_baseline(refresh: bool) -> dict:
         baseline = json.loads(BASELINE_PATH.read_text(encoding="utf-8"))
         if baseline.get("study_area") != CONFIG["study_area"]:
             raise ValueError("The normalisation baseline is for a different study area.")
+        if baseline.get("analysis_crs") != CRS:
+            raise ValueError("The normalisation baseline uses a different analysis CRS.")
+        if not math.isclose(
+            float(baseline.get("analysis_resolution_m", -1)),
+            RESOLUTION,
+            abs_tol=1e-9,
+        ):
+            raise ValueError("The normalisation baseline uses a different raster resolution.")
+        for section in ("raster_indicators", "exposure_indicators"):
+            if not isinstance(baseline.get(section), dict):
+                raise ValueError(f"The normalisation baseline lacks a valid {section} section.")
         return baseline
     return {
         "schema_version": 1,
@@ -456,6 +468,7 @@ def build_index(
         Resampling.bilinear,
     )
     dem_valid = study_mask & np.isfinite(dem)
+    dem_missing_before_fill = int((study_mask & ~np.isfinite(dem)).sum())
     if dem_valid.sum() / study_mask.sum() < 0.995:
         raise ValueError("DEM coverage is incomplete within the study area.")
     dem_filled = fill_nearest(dem, dem_valid)
@@ -478,6 +491,10 @@ def build_index(
         height,
         Resampling.bilinear,
     )
+    # The global CHIRPS GeoTIFF contains -9999 cells but does not declare a
+    # nodata value. Treat negative precipitation as missing before QA/filling.
+    rainfall[rainfall < 0] = np.nan
+    rainfall_missing_before_fill = int((study_mask & ~np.isfinite(rainfall)).sum())
     rainfall = fill_small_gaps("rainfall", rainfall, study_mask)
     rainfall[~study_mask] = np.nan
     landcover = reproject_sources(
@@ -487,6 +504,7 @@ def build_index(
         height,
         Resampling.nearest,
     )
+    landcover_missing_before_fill = int((study_mask & ~np.isfinite(landcover)).sum())
     landcover = fill_small_gaps("land cover", landcover, study_mask)
     landcover[~study_mask] = np.nan
     clay_raw = reproject_sources(
@@ -497,6 +515,7 @@ def build_index(
         Resampling.bilinear,
     )
     clay_percent = clay_raw / 10.0  # SoilGrids clay unit is g/kg (conversion to mass %).
+    clay_missing_before_fill = int((study_mask & ~np.isfinite(clay_percent)).sum())
     clay_percent = fill_small_gaps("topsoil clay", clay_percent, study_mask)
     clay_percent[~study_mask] = np.nan
 
@@ -552,6 +571,113 @@ def build_index(
         )
         for name, array in raster_indicator_inputs.items()
     }
+    study_cell_count = int(study_mask.sum())
+    preprocessing_records = []
+    layer_audit_inputs = [
+        (
+            "Copernicus DEM GLO-30",
+            "elevation_m",
+            dem,
+            dem_missing_before_fill,
+            "approximately 30 m",
+            "bilinear",
+            None,
+            "DSM used to derive slope and local relief",
+        ),
+        (
+            "CHIRPS v2.0 1981-2024 mean annual rainfall",
+            "rainfall",
+            rainfall,
+            rainfall_missing_before_fill,
+            "0.05 degrees (approximately 5 km)",
+            "bilinear",
+            raster_bounds["rainfall"],
+            "Resampling does not create 30 m rainfall observations",
+        ),
+        (
+            "ESA WorldCover 2021 v200",
+            "landcover",
+            landcover,
+            landcover_missing_before_fill,
+            "10 m",
+            "nearest neighbour",
+            None,
+            "Categorical classes retained before lookup scoring",
+        ),
+        (
+            "SoilGrids 2.0 clay 0-5 cm",
+            "clay",
+            clay_percent,
+            clay_missing_before_fill,
+            "250 m",
+            "bilinear",
+            raster_bounds["clay"],
+            "Surface-clay proxy; not a geotechnical strength layer",
+        ),
+        (
+            "Derived from Copernicus DEM GLO-30",
+            "slope",
+            slope,
+            0,
+            "30 m target grid",
+            "terrain derivative",
+            raster_bounds["slope"],
+            "Slope in degrees",
+        ),
+        (
+            "Derived from Copernicus DEM GLO-30",
+            "local_relief",
+            local_relief,
+            0,
+            "approximately 1 km moving window",
+            "maximum minus minimum",
+            raster_bounds["local_relief"],
+            "Overlaps partly with slope; therefore receives a smaller weight",
+        ),
+    ]
+    for (
+        source_name,
+        layer_name,
+        array,
+        missing_count,
+        native_detail,
+        method,
+        bounds,
+        note,
+    ) in layer_audit_inputs:
+        valid_values = array[study_mask & np.isfinite(array)]
+        below_count = 0
+        above_count = 0
+        p02 = np.nan
+        p98 = np.nan
+        if bounds is not None:
+            p02 = float(bounds["p02"])
+            p98 = float(bounds["p98"])
+            below_count = int((valid_values < p02).sum())
+            above_count = int((valid_values > p98).sum())
+        preprocessing_records.append(
+            {
+                "source_or_derivation": source_name,
+                "analysis_layer": layer_name,
+                "native_detail": native_detail,
+                "processing_method": method,
+                "target_resolution_m": RESOLUTION,
+                "study_cells": study_cell_count,
+                "missing_cells_before_fill": missing_count,
+                "missing_percent_before_fill": 100 * missing_count / study_cell_count,
+                "filled_cells": missing_count,
+                "valid_cells_after_fill": int(valid_values.size),
+                "baseline_p02": p02,
+                "baseline_p98": p98,
+                "cells_below_p02": below_count,
+                "cells_above_p98": above_count,
+                "clipped_percent": 100 * (below_count + above_count) / valid_values.size,
+                "quality_note": note,
+            }
+        )
+    pd.DataFrame(preprocessing_records).to_csv(
+        TABLES / "preprocessing_quality_audit.csv", index=False
+    )
     indicators = {
         "slope": robust_scale(slope, study_mask, raster_bounds["slope"]),
         "rainfall": robust_scale(rainfall, study_mask, raster_bounds["rainfall"]),

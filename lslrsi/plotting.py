@@ -9,9 +9,39 @@ import matplotlib
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from matplotlib.font_manager import FontProperties
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
 matplotlib.use("Agg")
 from matplotlib import pyplot as plt  # noqa: E402
+
+
+def add_map_aids(axis, scale_length_m: float = 5_000) -> None:
+    """Add a compact north arrow and metric scale bar to a projected map."""
+    axis.annotate(
+        "N",
+        xy=(0.96, 0.96),
+        xytext=(0.96, 0.88),
+        xycoords="axes fraction",
+        textcoords="axes fraction",
+        ha="center",
+        va="center",
+        fontsize=9,
+        fontweight="bold",
+        arrowprops={"arrowstyle": "-|>", "color": "#222222", "lw": 1.2},
+    )
+    scale_bar = AnchoredSizeBar(
+        axis.transData,
+        scale_length_m,
+        f"{scale_length_m / 1000:g} km",
+        "lower right",
+        pad=0.35,
+        color="#222222",
+        frameon=True,
+        size_vertical=35,
+        fontproperties=FontProperties(size=8),
+    )
+    axis.add_artist(scale_bar)
 
 
 def plot_raster(
@@ -44,6 +74,7 @@ def plot_raster(
     colorbar = plt.colorbar(image, ax=axis, shrink=0.78)
     if label:
         colorbar.set_label(label)
+    add_map_aids(axis)
 
 
 def add_source_note(figure, note: str) -> None:
@@ -80,12 +111,14 @@ def create_analysis_figures(
         linewidth=0.5,
         edgecolor="white",
         legend=True,
+        legend_kwds={"label": "Population density (people/km²)", "shrink": 0.78},
         ax=axis,
     )
     gns.boundary.plot(ax=axis, color="#333333", linewidth=0.35)
     axis.set_title(f"{division_name} DSD: 2024 population density by GN division")
     axis.set_xlabel("Easting (m)")
     axis.set_ylabel("Northing (m)")
+    add_map_aids(axis)
     add_source_note(
         figure,
         f"Sources: Sri Lanka DCS CPH 2024 provisional GN data and boundaries. CRS: {analysis_crs}.",
@@ -154,7 +187,11 @@ def create_analysis_figures(
         "Spearman correlation of normalized indicators "
         f"(random sample, n={len(correlation_data):,})"
     )
-    figure.tight_layout()
+    add_source_note(
+        figure,
+        "Source: Author's calculations from the seven verified and normalized project indicators.",
+    )
+    figure.tight_layout(rect=(0, 0.025, 1, 1))
     figure.savefig(figures / "figure_03_indicator_correlation.png", dpi=220)
     plt.close(figure)
 
@@ -181,8 +218,9 @@ def create_analysis_figures(
         axis.legend(loc="lower left")
     add_source_note(
         figure,
-        f"Source: NASA GLC; {len(inside_candidates)} of {len(candidates)} keyword candidates "
-        "fall inside the DSD; stated accuracy is 1–10 km.",
+        "Sources: Derived susceptibility from the verified project inputs; NASA GLC event "
+        f"check ({len(inside_candidates)} of {len(candidates)} keyword candidates inside the DSD; "
+        "stated accuracy 1-10 km).",
     )
     figure.tight_layout(rect=(0, 0.025, 1, 1))
     figure.savefig(figures / "figure_04_susceptibility_and_events.png", dpi=220)
@@ -223,10 +261,11 @@ def create_analysis_figures(
     axis.set_title(f"{division_name} LS-LRSI by GN division")
     axis.set_xlabel("Easting (m)")
     axis.set_ylabel("Northing (m)")
+    add_map_aids(axis)
     add_source_note(
         figure,
-        f"Risk classes are quartiles relative to the {len(gns)} {division_name} GN divisions; "
-        "they are not national warning thresholds.",
+        "Source: Author's LS-LRSI calculations from verified project inputs. "
+        f"Classes are relative quartiles for {len(gns)} {division_name} GNs, not warnings.",
     )
     figure.tight_layout(rect=(0, 0.025, 1, 1))
     figure.savefig(figures / "figure_05_final_gn_risk.png", dpi=220)
@@ -237,7 +276,7 @@ def create_analysis_figures(
     axes[0].barh(top["GND_Name"], top["risk_score"], color="#c43c39")
     axes[0].set_xlabel("LS-LRSI score (0–100)")
     axes[0].set_title("Ten highest relative risk scores")
-    axes[1].scatter(
+    scatter = axes[1].scatter(
         top["susceptibility_score"],
         top["exposure_score"],
         c=top["risk_score"],
@@ -245,17 +284,25 @@ def create_analysis_figures(
         s=70,
     )
     for _, row in top.iterrows():
+        label_on_left = row["susceptibility_score"] > 56.5
         axes[1].annotate(
             row["GND_Name"],
             (row["susceptibility_score"], row["exposure_score"]),
             fontsize=7,
-            xytext=(3, 3),
+            xytext=(-3, 3) if label_on_left else (3, 3),
             textcoords="offset points",
+            ha="right" if label_on_left else "left",
         )
     axes[1].set_xlabel("Susceptibility score (0–100)")
     axes[1].set_ylabel("Exposure score (0–100)")
     axes[1].set_title("Physical susceptibility and social exposure")
-    figure.tight_layout()
+    colorbar = figure.colorbar(scatter, ax=axes[1], shrink=0.78)
+    colorbar.set_label("Final LS-LRSI score (0–100)")
+    add_source_note(
+        figure,
+        "Source: Author's calculations from the verified project inputs; see DATA_SOURCES.md.",
+    )
+    figure.tight_layout(rect=(0, 0.025, 1, 1))
     figure.savefig(figures / "figure_06_top_risk_components.png", dpi=220)
     plt.close(figure)
 
@@ -269,7 +316,12 @@ def create_analysis_figures(
     axis.set_xlabel("Simulations retaining the baseline risk class (%)")
     axis.set_title(f"GN risk-class stability under {len(sensitivity_draws)} weight perturbations")
     axis.set_xlim(0, 100)
-    figure.tight_layout()
+    add_source_note(
+        figure,
+        "Source: Author's 500-run Dirichlet perturbation analysis of the seven "
+        "susceptibility weights.",
+    )
+    figure.tight_layout(rect=(0, 0.025, 1, 1))
     figure.savefig(figures / "figure_07_weight_sensitivity.png", dpi=220)
     plt.close(figure)
 
@@ -312,7 +364,12 @@ def create_analysis_figures(
                 arrowprops={"arrowstyle": "->", "color": "#375a7f", "lw": 1.5},
             )
     axis.set_title(f"Reusable {division_name} LS-LRSI workflow", fontsize=14, pad=16)
-    figure.tight_layout()
+    add_source_note(
+        figure,
+        "Source: Author's workflow implemented in scripts/build_index.py and documented "
+        "in METHODOLOGY.md.",
+    )
+    figure.tight_layout(rect=(0, 0.025, 1, 1))
     figure.savefig(
         figures / "figure_08_index_workflow.png",
         dpi=220,

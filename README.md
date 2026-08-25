@@ -9,6 +9,7 @@ This repository builds a Location-Specific Landslide Risk Scoring Index for Hald
 - `outputs/vectors/haldummulla_gn_risk.gpkg`: GN-level vector results.
 - `outputs/figures/`: eight report-ready figures.
 - `data/raw/download_manifest.json`: source file sizes and SHA-256 hashes.
+- `outputs/tables/preprocessing_quality_audit.csv`: missing coverage, filling and robust-clipping audit.
 - `DATA_SOURCES.md`: source register, links and limitations.
 
 ## Reproduce the workflow
@@ -49,6 +50,8 @@ The app is read-only and serves the generated outputs; rerun `python scripts/bui
 ## Method summary
 
 The susceptibility weights are slope 0.30, rainfall 0.20, land cover 0.15, local relief 0.05, clay 0.10, road proximity 0.10 and stream proximity 0.10. Local relief is deliberately capped because it overlaps with slope (sampled Spearman correlation approximately 0.62). GN susceptibility equals 0.60 of the mean plus 0.40 of the 90th percentile. Exposure uses population density 0.45, occupied housing density 0.25, vulnerable population share 0.15 and critical amenity density 0.15. Final risk is a weighted geometric mean with 0.70 susceptibility and 0.30 exposure.
+
+The weights, land-cover lookup values and distance-decay distances are transparent expert-judgement assumptions, not calibrated failure probabilities. The CHIRPS input has an effective native resolution of 0.05 degrees (approximately 5 km); bilinear alignment to the 30 m target grid does not create 30 m rainfall observations.
 
 ## Use and limitations
 

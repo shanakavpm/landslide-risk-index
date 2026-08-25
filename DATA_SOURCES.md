@@ -18,3 +18,7 @@ The exact downloaded files, byte sizes and SHA-256 hashes are stored in `data/ra
 
 NBRO hazard-zonation products should be used as an external professional benchmark if suitable local map sheets and permission are obtained. They were not used as a training layer because the current reproducible pipeline did not obtain an official machine-readable NBRO vector or raster service. This avoids digitising a web image and presenting it as primary data.
 
+## Rainfall interpretation and future extension
+
+The baseline CHIRPS layer is a static climatological indicator. Its 0.05-degree native grid is approximately 5 km around Haldummulla, and resampling it to the common 30 m grid only aligns cells for calculation. It does not add local rainfall detail. A future dynamic version should derive one internally coherent rainfall sub-index from dated daily rainfall, such as maximum 1-day, 3-day or 7-day accumulation and antecedent 7-day or 30-day rainfall. Those variables should be calibrated against a field-verified, dated inventory and checked for correlation before receiving separate weights.
+
