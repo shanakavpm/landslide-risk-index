@@ -48,12 +48,12 @@ except (FileNotFoundError, OSError, UnicodeError, ValueError) as error:
 
 st.title("Haldummulla Location-Specific Landslide Risk Index")
 st.caption(
-    "Relative screening results for Haldummulla Divisional Secretariat Division, "
+    "Relative screening results for the Haldummulla Divisional Secretariat Division, "
     "Badulla District, Sri Lanka"
 )
 
 with st.sidebar:
-    st.header("Explore results")
+    st.header("Explore the results")
     available_classes = set(risk_data["risk_class"].dropna().astype(str))
     risk_classes = ["All classes"] + [
         risk_class for risk_class in RISK_CLASS_ORDER if risk_class in available_classes
@@ -141,7 +141,7 @@ if figure_path.exists():
 else:
     st.warning(f"Figure is not available: {figure_filename}")
 
-with st.expander("Method and interpretation"):
+with st.expander("Method and intended use"):
     st.write(
         "The index combines a 30 m physical susceptibility surface with GN-level "
         "social exposure. Susceptibility uses slope, rainfall, land cover, local "
@@ -151,8 +151,8 @@ with st.expander("Method and interpretation"):
         "susceptibility and 30% exposure."
     )
     st.write(
-        "These are relative screening scores for prioritisation, not engineering "
-        "design, cadastral decisions or operational early-warning thresholds."
+        "These are relative screening scores for prioritisation. They are not "
+        "engineering design, cadastral decisions or operational early-warning thresholds."
     )
     sensitivity = metadata["sensitivity_rank_correlation"]
     st.write(
@@ -160,4 +160,4 @@ with st.expander("Method and interpretation"):
         f"a median Spearman rank correlation of {sensitivity['median']:.3f}."
     )
 
-st.caption("Data and methodology: see DATA_SOURCES.md and README.md in the repository.")
+st.caption("Data and methodology are available in DATA_SOURCES.md and README.md in the repository.")

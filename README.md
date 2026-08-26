@@ -1,6 +1,6 @@
 # Haldummulla LS-LRSI
 
-This repository builds a Location-Specific Landslide Risk Scoring Index for Haldummulla DSD, Badulla District. It combines a 30 m physical susceptibility surface with GN-level social exposure. The method is intended for relative screening and prioritisation, not engineering design or operational early warning.
+This repository produces a Location-Specific Landslide Risk Scoring Index for Haldummulla DSD, Badulla District. It combines a 30 m physical-susceptibility surface with GN-level social exposure. The method supports relative screening and prioritisation; it is not intended for engineering design or operational early warning.
 
 ## Key outputs
 
@@ -21,7 +21,7 @@ This repository builds a Location-Specific Landslide Risk Scoring Index for Hald
 
 Do not refresh the normalisation baseline for routine data updates. Only after a documented methodology or study-area review, run `python scripts/build_index.py --refresh-normalization-baseline`, review the resulting configuration change, and rerun the standard command to confirm the new baseline.
 
-The supplied random seed is fixed in `config/project.json`, so the weight-sensitivity results are reproducible. Dataset providers may update source files; use the SHA-256 manifest to identify the exact inputs used for this run.
+The random seed is fixed in `config/project.json`, making the weight-sensitivity results reproducible. Dataset providers may update source files, so use the SHA-256 manifest to identify the exact inputs used for this analysis.
 
 The committed `config/input_checksums.json` prevents silent input changes. To deliberately refresh all source snapshots, review the providers and then run `python scripts/download_data.py --refresh-downloads --accept-source-updates`. Commit the revised checksum register together with the resulting analysis outputs.
 
@@ -45,11 +45,11 @@ The pipeline writes a complete run to a temporary directory and publishes it onl
 
 ## Deploy the dashboard
 
-The generated results can be published as a Streamlit dashboard. The repository includes `app.py`. Keep the dashboard assets under `outputs/figures/` and the two deployment tables under `outputs/tables/` when committing the project.
+The generated results can be published as a Streamlit dashboard through `app.py`. Keep the dashboard assets in `outputs/figures/` and the two deployment tables in `outputs/tables/` when committing the project.
 
 For Streamlit Community Cloud, create a new app from this repository and select `app.py` as the entry point.
 
-The app is read-only and serves the generated outputs; rerun `python scripts/build_index.py` locally whenever the source data or model configuration changes, then redeploy the updated outputs.
+The dashboard is read-only and displays the generated outputs. Rerun `python scripts/build_index.py` locally whenever the source data or model configuration changes, then redeploy the updated outputs.
 
 ## Method summary
 

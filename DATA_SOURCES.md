@@ -1,6 +1,6 @@
 # Verified data register
 
-The exact downloaded files, byte sizes and SHA-256 hashes are stored in `data/raw/download_manifest.json`. Expected source hashes are committed in `config/input_checksums.json` and verified before the manifest is written. The analysis does not treat a successful download as proof of suitability; the limits below must be retained in the report.
+The exact downloaded files, byte sizes and SHA-256 hashes are recorded in `data/raw/download_manifest.json`. Expected source hashes are committed in `config/input_checksums.json` and verified before the manifest is created. A successful download does not demonstrate that a source is suitable for the analysis; the limitations below should remain in the report.
 
 | Local file | Provider and direct source | Native detail | Coverage used | Analysis role | Verification / caution |
 |---|---|---|---|---|---|
@@ -16,9 +16,9 @@ The exact downloaded files, byte sizes and SHA-256 hashes are stored in `data/ra
 
 ## Source selection decision
 
-NBRO hazard-zonation products should be used as an external professional benchmark if suitable local map sheets and permission are obtained. They were not used as a training layer because the current reproducible pipeline did not obtain an official machine-readable NBRO vector or raster service. This avoids digitising a web image and presenting it as primary data.
+NBRO hazard-zonation products should be used as an external professional benchmark if suitable local map sheets and permission become available. They were not used as a training layer because the reproducible pipeline did not obtain an official machine-readable NBRO vector or raster service. This avoids digitising a web image and presenting it as primary data.
 
 ## Rainfall interpretation and future extension
 
-The baseline CHIRPS layer is a static climatological indicator. Its 0.05-degree native grid is approximately 5 km around Haldummulla, and resampling it to the common 30 m grid only aligns cells for calculation. It does not add local rainfall detail. A future dynamic version should derive one internally coherent rainfall sub-index from dated daily rainfall, such as maximum 1-day, 3-day or 7-day accumulation and antecedent 7-day or 30-day rainfall. Those variables should be calibrated against a field-verified, dated inventory and checked for correlation before receiving separate weights.
+The baseline CHIRPS layer is a static climatological indicator. Its 0.05-degree native grid is approximately 5 km around Haldummulla, and resampling it to the common 30 m grid only aligns cells for calculation; it does not add local rainfall detail. A future dynamic version should derive one internally coherent rainfall sub-index from dated daily rainfall, such as maximum 1-day, 3-day or 7-day accumulation and antecedent 7-day or 30-day rainfall. These variables should be calibrated against a field-verified, dated inventory and checked for correlation before they receive separate weights.
 

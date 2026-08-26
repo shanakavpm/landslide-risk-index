@@ -1,6 +1,6 @@
 # Implemented LS-LRSI method
 
-This is implementation documentation for the codebase; it does not replace the assessment report's literature review or local expert justification of the weights.
+This document describes the implemented workflow. It does not replace the assessment report's literature review or the need for local expert justification of the weights.
 
 ## Calculation
 
@@ -20,7 +20,7 @@ GN exposure is a weighted sum of normalised population density, housing density,
 
 `LS-LRSI_GN = 100 × (S_GN / 100)^0.70 × (E_GN / 100)^0.30`.
 
-Classes are within-Haldummulla quartiles, so they must not be treated as national or operational thresholds. Equal scores are always assigned to the same class; the result does not depend on source row order.
+Classes are based on quartiles within Haldummulla and must not be treated as national or operational thresholds. Equal scores are always assigned to the same class, regardless of source-row order.
 
 ## Pseudocode
 
@@ -42,8 +42,8 @@ write maps, tables, rasters, vectors and provenance metadata
 
 ## Reuse rule
 
-Routine future updates must reuse `config/normalization_baseline.json`; this preserves score comparability with the baseline assessment. Recalculate that file only when the study area, input definitions, or index methodology have intentionally changed and the revised method has been reviewed.
+Routine updates must reuse `config/normalization_baseline.json` to preserve comparability with the baseline assessment. Recalculate this file only when the study area, input definitions or index methodology have intentionally changed and the revised method has been reviewed.
 
 ## Assumption boundary
 
-The weighting, WorldCover class scores and road/stream decay distances are provisional expert-judgement choices. They are intentionally interpretable but are not calibrated landslide probabilities. Mean annual CHIRPS rainfall represents broad climatological wetness at an effective 0.05-degree native resolution; the 30 m aligned raster must not be interpreted as local 30 m rainfall measurement. Event-based rainfall, geology and a field-verified inventory are priority extensions rather than hidden assumptions in the baseline score.
+The weighting, WorldCover class scores and road/stream decay distances are provisional expert-judgement choices. They are intentionally interpretable but do not represent calibrated landslide probabilities. Mean annual CHIRPS rainfall represents broad climatological wetness at an effective 0.05-degree native resolution; the aligned 30 m raster must not be interpreted as a local 30 m rainfall measurement. Event-based rainfall, geology and a field-verified inventory are priority extensions, not hidden assumptions in the baseline score.

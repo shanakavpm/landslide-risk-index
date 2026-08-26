@@ -2,13 +2,13 @@
 
 ## Current verification status
 
-The complete pipeline has been rebuilt from the local, checksum-verified raw-data snapshot and the integration test confirms that the rebuilt GN risk-score CSV matches the published dashboard CSV within an absolute and relative tolerance of `1e-9`. The published figure contract contains nine non-empty PNG files.
+The complete pipeline has been rebuilt from the local, checksum-verified raw-data snapshot. The integration test confirms that the rebuilt GN risk-score CSV matches the published dashboard CSV within an absolute and relative tolerance of `1e-9`. The published figure contract contains nine non-empty PNG files.
 
 This is a local full-build verification. A fresh-clone verification should be recorded only after the same workflow succeeds in a newly cloned repository and a newly created virtual environment.
 
 ## Public provenance
 
-[`data/raw/download_manifest.json`](data/raw/download_manifest.json) is committed to the repository. It records every raw input's source, byte size, SHA-256 digest, local snapshot timestamp and, where applicable, source URL and request details. The raw files themselves are intentionally excluded from Git history because the snapshot is approximately 203 MB.
+[`data/raw/download_manifest.json`](data/raw/download_manifest.json) is committed to the repository. It records each raw input's source, byte size, SHA-256 digest, local snapshot timestamp and, where applicable, source URL and request details. The raw files are intentionally excluded from Git history because the snapshot is approximately 203 MB.
 
 ## Fresh-clone verification procedure
 
@@ -22,4 +22,4 @@ This is a local full-build verification. A fresh-clone verification should be re
 
 ## Raw-data snapshot distribution
 
-Do not add the raw snapshot to normal Git history. Before external distribution, confirm each provider's redistribution terms. If permitted, publish a versioned archive such as `haldummulla-lslrsi-raw-inputs-assignment-final.zip` as a GitHub Release asset or Zenodo record, then record its SHA-256 digest and DOI or release URL here.
+Do not add the raw snapshot to normal Git history. Before distributing it externally, confirm each provider's redistribution terms. If permitted, publish a versioned archive such as `haldummulla-lslrsi-raw-inputs-assignment-final.zip` as a GitHub Release asset or Zenodo record. Record its SHA-256 digest and DOI or release URL here.
