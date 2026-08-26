@@ -67,18 +67,22 @@ class OutputPaths:
 
     @property
     def figures(self) -> Path:
+        """Return the directory for generated figures."""
         return self.root / "figures"
 
     @property
     def tables(self) -> Path:
+        """Return the directory for generated tables."""
         return self.root / "tables"
 
     @property
     def rasters(self) -> Path:
+        """Return the directory for generated raster files."""
         return self.root / "rasters"
 
     @property
     def vectors(self) -> Path:
+        """Return the directory for generated vector files."""
         return self.root / "vectors"
 
     def create(self) -> None:
