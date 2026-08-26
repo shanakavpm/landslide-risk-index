@@ -7,6 +7,7 @@ from pathlib import Path
 import pandas as pd
 import rasterio
 
+from scripts import download_data
 from scripts.build_index import (
     EXPECTED_OUTPUTS,
     OutputPaths,
@@ -16,10 +17,15 @@ from scripts.build_index import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-RAW_INPUT = ROOT / "data" / "raw" / "dcs_haldummulla_gn_population_2024.geojson"
+REQUIRED_RAW_INPUTS = [
+    ROOT / "data" / "raw" / filename for filename in download_data.SOURCE_BY_FILE
+]
 
 
-@unittest.skipUnless(RAW_INPUT.is_file(), "Full smoke test requires the local raw-data snapshot.")
+@unittest.skipUnless(
+    all(path.is_file() for path in REQUIRED_RAW_INPUTS),
+    "Full smoke test requires the complete verified raw-data snapshot.",
+)
 class PipelineIntegrationTests(unittest.TestCase):
     def test_full_build_contract(self) -> None:
         with tempfile.TemporaryDirectory(prefix=".integration-test-", dir=ROOT) as temporary:
@@ -53,6 +59,16 @@ class PipelineIntegrationTests(unittest.TestCase):
                         if path.is_file()
                     }
                 )
+            )
+
+            rebuilt = pd.read_csv(paths.tables / "haldummulla_gn_risk_scores.csv")
+            published = pd.read_csv(ROOT / "outputs" / "tables" / "haldummulla_gn_risk_scores.csv")
+            pd.testing.assert_frame_equal(
+                rebuilt,
+                published,
+                check_exact=False,
+                rtol=1e-9,
+                atol=1e-9,
             )
 
 

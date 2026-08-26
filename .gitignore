@@ -40,7 +40,9 @@ venv.bak/
 .DS_Store
 
 # Data and outputs (large files)
-data/raw/
+# Ignore raw files, but publish their provenance manifest.
+data/raw/*
+!data/raw/download_manifest.json
 data/interim/
 data/processed/
 outputs/figures/

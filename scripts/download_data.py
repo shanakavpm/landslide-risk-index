@@ -44,6 +44,26 @@ SOURCE_BY_FILE = {
     "osm_waterways.json": "OpenStreetMap via Overpass API",
     "osm_critical_amenities.json": "OpenStreetMap via Overpass API",
 }
+DIRECT_URL_KEY_BY_FILE = {
+    "dcs_gn_population_2024.xlsx": "dcs_gn_population_excel",
+    "dcs_gn_housing_2024.xlsx": "dcs_gn_housing_excel",
+    "copdem_n06e080.tif": "dem_n06e080",
+    "copdem_n06e081.tif": "dem_n06e081",
+    "chirps_1981_2024_mean_annual.tif": "chirps_1981_2024_mean_annual",
+    "worldcover_2021_n06e078.tif": "worldcover_n06e078",
+    "worldcover_2021_n06e081.tif": "worldcover_n06e081",
+    "nasa_global_landslide_catalog.csv": "nasa_glc_csv",
+}
+OSM_FILENAMES = {
+    "osm_roads.json",
+    "osm_waterways.json",
+    "osm_critical_amenities.json",
+}
+OSM_ENDPOINTS = [
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.kumi.systems/api/interpreter",
+    "https://overpass.private.coffee/api/interpreter",
+]
 
 
 def sha256(path: Path) -> str:
@@ -141,20 +161,24 @@ def save_json_response(
     print(f"[done] {destination.name}")
 
 
-def download_dcs_boundaries(config: dict[str, Any], force: bool = False) -> Path:
-    """Download and validate the configured DCS GN boundaries."""
-    destination = RAW / config["boundary_file"]
-    params = {
+def dcs_boundary_query_parameters(config: dict[str, Any]) -> dict[str, str]:
+    """Return the fixed FeatureServer query used to obtain GN boundaries."""
+    return {
         "where": config["study_area_query"],
         "outFields": "*",
         "outSR": "4326",
         "returnGeometry": "true",
         "f": "geojson",
     }
+
+
+def download_dcs_boundaries(config: dict[str, Any], force: bool = False) -> Path:
+    """Download and validate the configured DCS GN boundaries."""
+    destination = RAW / config["boundary_file"]
     save_json_response(
         config["data_urls"]["dcs_gn_population_feature_service"],
         destination,
-        params=params,
+        params=dcs_boundary_query_parameters(config),
         force=force,
     )
     gns = gpd.read_file(destination)
@@ -180,19 +204,15 @@ def study_bbox(boundary_path: Path, pad_degrees: float = 0.02) -> tuple[float, f
     )
 
 
-def download_soilgrids(
-    config: dict[str, Any],
-    bbox: tuple[float, float, float, float],
-    force: bool = False,
-) -> None:
-    """Download the SoilGrids clay raster for the study extent."""
+def soilgrids_request_parameters(bbox: tuple[float, float, float, float]) -> dict[str, str]:
+    """Return the WCS request used to obtain the study-area clay raster."""
     west, south, east, north = bbox
     mean_lat = (south + north) / 2
     width_m = (east - west) * 111_320 * math.cos(math.radians(mean_lat))
     height_m = (north - south) * 110_540
     width = max(50, math.ceil(width_m / 250))
     height = max(50, math.ceil(height_m / 250))
-    params = {
+    return {
         "SERVICE": "WCS",
         "VERSION": "1.0.0",
         "REQUEST": "GetCoverage",
@@ -203,6 +223,15 @@ def download_soilgrids(
         "HEIGHT": str(height),
         "FORMAT": "GEOTIFF_INT16",
     }
+
+
+def download_soilgrids(
+    config: dict[str, Any],
+    bbox: tuple[float, float, float, float],
+    force: bool = False,
+) -> None:
+    """Download the SoilGrids clay raster for the study extent."""
+    params = soilgrids_request_parameters(bbox)
     destination = RAW / "soilgrids_clay_0_5cm_mean_250m.tif"
     if not force and destination.exists() and destination.stat().st_size > 1000:
         print(f"[skip] {destination.name}")
@@ -258,46 +287,95 @@ def download_overpass_layer(
     raise RuntimeError(f"All Overpass endpoints failed for {destination.name}") from last_error
 
 
-def download_osm(bbox: tuple[float, float, float, float], force: bool = False) -> None:
-    """Download roads, waterways, and critical amenities from OSM."""
+def osm_queries(bbox: tuple[float, float, float, float]) -> dict[str, str]:
+    """Return the exact Overpass queries used for the three OSM inputs."""
     west, south, east, north = bbox
     overpass_bbox = f"{south},{west},{north},{east}"
-    endpoints = [
-        "https://overpass-api.de/api/interpreter",
-        "https://overpass.kumi.systems/api/interpreter",
-        "https://overpass.private.coffee/api/interpreter",
-    ]
-    road_query = f'[out:json][timeout:240];way["highway"]({overpass_bbox});out tags geom;'
-    water_query = f'[out:json][timeout:240];way["waterway"]({overpass_bbox});out tags geom;'
-    amenity_query = (
-        "[out:json][timeout:120];("
-        f'node["amenity"~"^(school|college|hospital|clinic|police|fire_station)$"]({overpass_bbox});'
-        f'way["amenity"~"^(school|college|hospital|clinic|police|fire_station)$"]({overpass_bbox});'
-        ");out center tags;"
-    )
-    download_overpass_layer(RAW / "osm_roads.json", road_query, endpoints, force)
-    download_overpass_layer(RAW / "osm_waterways.json", water_query, endpoints, force)
-    download_overpass_layer(RAW / "osm_critical_amenities.json", amenity_query, endpoints, force)
+    return {
+        "osm_roads.json": f'[out:json][timeout:240];way["highway"]({overpass_bbox});out tags geom;',
+        "osm_waterways.json": (
+            f'[out:json][timeout:240];way["waterway"]({overpass_bbox});out tags geom;'
+        ),
+        "osm_critical_amenities.json": (
+            "[out:json][timeout:120];("
+            f'node["amenity"~"^(school|college|hospital|clinic|police|fire_station)$"]({overpass_bbox});'
+            f'way["amenity"~"^(school|college|hospital|clinic|police|fire_station)$"]({overpass_bbox});'
+            ");out center tags;"
+        ),
+    }
 
 
-def build_manifest() -> None:
+def download_osm(bbox: tuple[float, float, float, float], force: bool = False) -> None:
+    """Download roads, waterways, and critical amenities from OSM."""
+    queries = osm_queries(bbox)
+    for filename, query in queries.items():
+        download_overpass_layer(RAW / filename, query, OSM_ENDPOINTS, force)
+
+
+def manifest_provenance(
+    filename: str,
+    config: dict[str, Any],
+    bbox: tuple[float, float, float, float],
+) -> dict[str, Any]:
+    """Return reproducible source details for one raw input file."""
+    urls = config["data_urls"]
+    if filename == config["boundary_file"]:
+        return {
+            "source_url": urls["dcs_gn_population_feature_service"],
+            "request": {"method": "GET", "parameters": dcs_boundary_query_parameters(config)},
+        }
+    if filename in DIRECT_URL_KEY_BY_FILE:
+        return {"source_url": urls[DIRECT_URL_KEY_BY_FILE[filename]]}
+    if filename == "soilgrids_clay_0_5cm_mean_250m.tif":
+        return {
+            "source_url": urls["soilgrids_wcs"],
+            "request": {
+                "method": "GET",
+                "parameters": soilgrids_request_parameters(bbox),
+            },
+        }
+    if filename in OSM_FILENAMES:
+        return {
+            "source_urls": OSM_ENDPOINTS,
+            "request": {
+                "method": "POST",
+                "parameters": {"data": osm_queries(bbox)[filename]},
+            },
+            "licence_or_attribution": "OpenStreetMap contributors, ODbL 1.0; https://www.openstreetmap.org/copyright",
+        }
+    if filename == "study_bbox.json":
+        return {
+            "derived_from": config["boundary_file"],
+            "parameters": {"padding_degrees": 0.02},
+        }
+    return {}
+
+
+def build_manifest(config: dict[str, Any], bbox: tuple[float, float, float, float]) -> None:
     """Write a provenance and checksum manifest for local input files."""
     generated_utc = datetime.now(UTC).isoformat()
     records = []
     for path in sorted(RAW.iterdir()):
         if not path.is_file() or path.name == "download_manifest.json":
             continue
-        records.append(
-            {
-                "file": path.name,
-                "source": SOURCE_BY_FILE.get(path.name, "Derived pipeline input"),
-                "bytes": path.stat().st_size,
-                "sha256": sha256(path),
-            }
-        )
+        record = {
+            "file": path.name,
+            "source": SOURCE_BY_FILE.get(path.name, "Derived pipeline input"),
+            "local_snapshot_mtime_utc": datetime.fromtimestamp(
+                path.stat().st_mtime, UTC
+            ).isoformat(),
+            "bytes": path.stat().st_size,
+            "sha256": sha256(path),
+        }
+        record.update(manifest_provenance(path.name, config, bbox))
+        records.append(record)
     manifest = {
-        "schema_version": 1,
+        "schema_version": 2,
         "generated_utc": generated_utc,
+        "snapshot_note": (
+            "local_snapshot_mtime_utc is the local file timestamp retained with this "
+            "snapshot; it is not asserted to be the upstream provider retrieval time."
+        ),
         "files": records,
     }
     atomic_write_text(
@@ -395,7 +473,7 @@ def main() -> None:
     if not args.skip_osm:
         download_osm(bbox, args.refresh_downloads)
     verify_input_checksums(args.accept_source_updates)
-    build_manifest()
+    build_manifest(config, bbox)
 
 
 if __name__ == "__main__":

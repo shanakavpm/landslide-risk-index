@@ -1,0 +1,179 @@
+{
+  "schema_version": 2,
+  "generated_utc": "2026-08-26T03:14:25.970151+00:00",
+  "snapshot_note": "local_snapshot_mtime_utc is the local file timestamp retained with this snapshot; it is not asserted to be the upstream provider retrieval time.",
+  "files": [
+    {
+      "file": "chirps_1981_2024_mean_annual.tif",
+      "source": "CHIRPS v2.0",
+      "local_snapshot_mtime_utc": "2026-08-16T11:40:55.618701+00:00",
+      "bytes": 57612558,
+      "sha256": "89ea2f738332dfdbc2ade7fd0a7dc7b31c8327c3ce218bed5379b87d210296cd",
+      "source_url": "https://data.chc.ucsb.edu/products/CHIRPS-2.0/global_annual/tifs/chirps-v2.0.1981-2024.44yrs.tif"
+    },
+    {
+      "file": "copdem_n06e080.tif",
+      "source": "Copernicus DEM GLO-30",
+      "local_snapshot_mtime_utc": "2026-08-16T11:38:40.707140+00:00",
+      "bytes": 47653237,
+      "sha256": "bfa222f4daa21161409146061c752439eefdb3c6b16264799a25dae9f8f8655f",
+      "source_url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N06_00_E080_00_DEM/Copernicus_DSM_COG_10_N06_00_E080_00_DEM.tif"
+    },
+    {
+      "file": "copdem_n06e081.tif",
+      "source": "Copernicus DEM GLO-30",
+      "local_snapshot_mtime_utc": "2026-08-16T11:39:37.545425+00:00",
+      "bytes": 27972443,
+      "sha256": "5df3709dcf6fe5318f86cd111af6f5605151e6b1ea41efe37a211c74d190724c",
+      "source_url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N06_00_E081_00_DEM/Copernicus_DSM_COG_10_N06_00_E081_00_DEM.tif"
+    },
+    {
+      "file": "dcs_gn_housing_2024.xlsx",
+      "source": "Department of Census and Statistics Sri Lanka",
+      "local_snapshot_mtime_utc": "2026-08-16T11:35:33.393953+00:00",
+      "bytes": 824477,
+      "sha256": "db5a9af593316cfce8ac72282ebc0aba4edc91443d0afce233db09cd53d8c62a",
+      "source_url": "https://www.statistics.gov.lk/Population/StaticalInformation/CPH2024/GN_housing_excel"
+    },
+    {
+      "file": "dcs_gn_population_2024.xlsx",
+      "source": "Department of Census and Statistics Sri Lanka",
+      "local_snapshot_mtime_utc": "2026-08-16T11:35:22.903835+00:00",
+      "bytes": 1541342,
+      "sha256": "2e0168c5daa43af4c4f61a55389768d5c86508ad47252a2d8c89a52986215425",
+      "source_url": "https://www.statistics.gov.lk/Population/StaticalInformation/CPH2024/GN_population_excel"
+    },
+    {
+      "file": "dcs_haldummulla_gn_population_2024.geojson",
+      "source": "DCS CPH 2024 ArcGIS FeatureServer",
+      "local_snapshot_mtime_utc": "2026-08-16T11:35:15.346404+00:00",
+      "bytes": 1060447,
+      "sha256": "8d3df97ef3b24bcd33e77c624fee1b9f6e2d67ddad275c8957f822989acd18b5",
+      "source_url": "https://services6.arcgis.com/v2E6mIH6KqVu8t9L/arcgis/rest/services/GND_POP_DATA_update/FeatureServer/0/query",
+      "request": {
+        "method": "GET",
+        "parameters": {
+          "where": "DSD_Name='Haldummulla'",
+          "outFields": "*",
+          "outSR": "4326",
+          "returnGeometry": "true",
+          "f": "geojson"
+        }
+      }
+    },
+    {
+      "file": "nasa_global_landslide_catalog.csv",
+      "source": "NASA Global Landslide Catalog legacy export",
+      "local_snapshot_mtime_utc": "2026-08-16T11:44:44.567448+00:00",
+      "bytes": 8479717,
+      "sha256": "2c4898899dd4f373c4320e121c5b655ebb5394d431fa42e57ec4828d07d48b04",
+      "source_url": "https://data.nasa.gov/docs/legacy/Global_Landslide_Catalog_Export/Global_Landslide_Catalog_Export_rows.csv"
+    },
+    {
+      "file": "osm_critical_amenities.json",
+      "source": "OpenStreetMap via Overpass API",
+      "local_snapshot_mtime_utc": "2026-08-16T11:46:57.152792+00:00",
+      "bytes": 7982,
+      "sha256": "67f197737c458b4a15f4d1c387a31a195d4e0d166c5eb9fcabce5e20896b225a",
+      "source_urls": [
+        "https://overpass-api.de/api/interpreter",
+        "https://overpass.kumi.systems/api/interpreter",
+        "https://overpass.private.coffee/api/interpreter"
+      ],
+      "request": {
+        "method": "POST",
+        "parameters": {
+          "data": "[out:json][timeout:120];(node[\"amenity\"~\"^(school|college|hospital|clinic|police|fire_station)$\"](6.52456514016914,80.78884768367371,6.830235924348489,81.1043402777817);way[\"amenity\"~\"^(school|college|hospital|clinic|police|fire_station)$\"](6.52456514016914,80.78884768367371,6.830235924348489,81.1043402777817););out center tags;"
+        }
+      },
+      "licence_or_attribution": "OpenStreetMap contributors, ODbL 1.0; https://www.openstreetmap.org/copyright"
+    },
+    {
+      "file": "osm_roads.json",
+      "source": "OpenStreetMap via Overpass API",
+      "local_snapshot_mtime_utc": "2026-08-16T11:44:50.939204+00:00",
+      "bytes": 3760985,
+      "sha256": "df6fac611c06f68733423d8b49f5724435ac9c694d1fb0da2b9ae98dd2eee3eb",
+      "source_urls": [
+        "https://overpass-api.de/api/interpreter",
+        "https://overpass.kumi.systems/api/interpreter",
+        "https://overpass.private.coffee/api/interpreter"
+      ],
+      "request": {
+        "method": "POST",
+        "parameters": {
+          "data": "[out:json][timeout:240];way[\"highway\"](6.52456514016914,80.78884768367371,6.830235924348489,81.1043402777817);out tags geom;"
+        }
+      },
+      "licence_or_attribution": "OpenStreetMap contributors, ODbL 1.0; https://www.openstreetmap.org/copyright"
+    },
+    {
+      "file": "osm_waterways.json",
+      "source": "OpenStreetMap via Overpass API",
+      "local_snapshot_mtime_utc": "2026-08-16T11:44:53.471313+00:00",
+      "bytes": 713465,
+      "sha256": "85c9d4b4ae8a025b41240674ed4d0f65076f341b4c8ebe09976aba894a496e9f",
+      "source_urls": [
+        "https://overpass-api.de/api/interpreter",
+        "https://overpass.kumi.systems/api/interpreter",
+        "https://overpass.private.coffee/api/interpreter"
+      ],
+      "request": {
+        "method": "POST",
+        "parameters": {
+          "data": "[out:json][timeout:240];way[\"waterway\"](6.52456514016914,80.78884768367371,6.830235924348489,81.1043402777817);out tags geom;"
+        }
+      },
+      "licence_or_attribution": "OpenStreetMap contributors, ODbL 1.0; https://www.openstreetmap.org/copyright"
+    },
+    {
+      "file": "soilgrids_clay_0_5cm_mean_250m.tif",
+      "source": "SoilGrids 2.0",
+      "local_snapshot_mtime_utc": "2026-08-16T11:44:46.662328+00:00",
+      "bytes": 20866,
+      "sha256": "168316d6048eb8e64a625458f6fbf361000406c7082b4129304737333735fbd6",
+      "source_url": "https://maps.isric.org/mapserv?map=/map/clay.map",
+      "request": {
+        "method": "GET",
+        "parameters": {
+          "SERVICE": "WCS",
+          "VERSION": "1.0.0",
+          "REQUEST": "GetCoverage",
+          "COVERAGE": "clay_0-5cm_mean",
+          "CRS": "EPSG:4326",
+          "BBOX": "80.78884768367371,6.52456514016914,81.1043402777817,6.830235924348489",
+          "WIDTH": "140",
+          "HEIGHT": "136",
+          "FORMAT": "GEOTIFF_INT16"
+        }
+      }
+    },
+    {
+      "file": "study_bbox.json",
+      "source": "Derived pipeline input",
+      "local_snapshot_mtime_utc": "2026-08-26T03:14:25.719261+00:00",
+      "bytes": 123,
+      "sha256": "c3e40bd3238dc8322e70f9d1415a878fa4100def6d7a4430ee4d2e3ca41ae15a",
+      "derived_from": "dcs_haldummulla_gn_population_2024.geojson",
+      "parameters": {
+        "padding_degrees": 0.02
+      }
+    },
+    {
+      "file": "worldcover_2021_n06e078.tif",
+      "source": "ESA WorldCover 2021 v200",
+      "local_snapshot_mtime_utc": "2026-08-16T11:43:38.322084+00:00",
+      "bytes": 34407738,
+      "sha256": "a2de57f330a5a2e36014a3d0e86e8538f3b014d6ed8d7070165a2288a8e4b899",
+      "source_url": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N06E078_Map.tif"
+    },
+    {
+      "file": "worldcover_2021_n06e081.tif",
+      "source": "ESA WorldCover 2021 v200",
+      "local_snapshot_mtime_utc": "2026-08-16T11:44:24.119136+00:00",
+      "bytes": 19310758,
+      "sha256": "484ca627ac65c6c69e0f1a5452fc7f6cb5624ce86bf17a7be9996a14442fee92",
+      "source_url": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N06E081_Map.tif"
+    }
+  ]
+}

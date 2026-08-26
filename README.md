@@ -8,7 +8,7 @@ This repository builds a Location-Specific Landslide Risk Scoring Index for Hald
 - `outputs/rasters/landslide_susceptibility_0_100.tif`: 30 m physical susceptibility.
 - `outputs/vectors/haldummulla_gn_risk.gpkg`: GN-level vector results.
 - `outputs/figures/`: nine report-ready figures.
-- `data/raw/download_manifest.json`: source file sizes and SHA-256 hashes.
+- [`data/raw/download_manifest.json`](data/raw/download_manifest.json): public provenance register with source details, byte sizes and SHA-256 hashes.
 - `outputs/tables/preprocessing_quality_audit.csv`: missing coverage, filling and robust-clipping audit.
 - `DATA_SOURCES.md`: source register, links and limitations.
 
@@ -24,6 +24,10 @@ Do not refresh the normalisation baseline for routine data updates. Only after a
 The supplied random seed is fixed in `config/project.json`, so the weight-sensitivity results are reproducible. Dataset providers may update source files; use the SHA-256 manifest to identify the exact inputs used for this run.
 
 The committed `config/input_checksums.json` prevents silent input changes. To deliberately refresh all source snapshots, review the providers and then run `python scripts/download_data.py --refresh-downloads --accept-source-updates`. Commit the revised checksum register together with the resulting analysis outputs.
+
+## Reproducibility record
+
+The public [raw-data provenance manifest](data/raw/download_manifest.json) identifies the exact source files used for the published analysis without placing the approximately 203 MB raw snapshot in Git history. See [REPRODUCIBILITY.md](REPRODUCIBILITY.md) for the clean-build procedure, verification scope and guidance on distributing a licensed raw-data archive.
 
 ## Code quality checks
 
