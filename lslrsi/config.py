@@ -8,7 +8,6 @@ from typing import Any
 from urllib.parse import urlparse
 
 REQUIRED_KEYS = {
-    "project_name",
     "study_area",
     "division_name",
     "boundary_file",
