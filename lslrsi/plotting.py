@@ -90,9 +90,11 @@ def create_analysis_figures(
     transform,
     slope: np.ndarray,
     rainfall: np.ndarray,
+    local_relief: np.ndarray,
     landcover_risk: np.ndarray,
     clay_percent: np.ndarray,
     indicators: dict[str, np.ndarray],
+    raster_bounds: dict[str, dict[str, float]],
     susceptibility: np.ndarray,
     candidates: gpd.GeoDataFrame,
     class_labels: list[str],
@@ -101,7 +103,7 @@ def create_analysis_figures(
     division_name: str,
     analysis_crs: str,
 ) -> None:
-    """Create the eight figures and the sampled indicator-correlation table."""
+    """Create the nine figures and the sampled indicator-correlation table."""
     sns.set_theme(style="whitegrid", context="notebook")
 
     figure, axis = plt.subplots(figsize=(9, 8))
@@ -165,6 +167,65 @@ def create_analysis_figures(
     figure.savefig(figures / "figure_02_physical_indicators.png", dpi=220)
     plt.close(figure)
 
+    distribution_layers = [
+        ("Slope", slope, "degrees", "#7B2CBF", "slope"),
+        ("Mean annual rainfall", rainfall, "mm/year", "#277DA1", "rainfall"),
+        ("Local relief (1 km)", local_relief, "m", "#F8961E", "local_relief"),
+        ("Topsoil clay (0–5 cm)", clay_percent, "% by mass", "#8C5A3C", "clay"),
+    ]
+    figure, axes = plt.subplots(2, 2, figsize=(10.5, 6.6), constrained_layout=True)
+    for axis, (title, array, unit, color, indicator_name) in zip(
+        axes.flat, distribution_layers, strict=False
+    ):
+        values = array[np.isfinite(array)]
+        bounds = raster_bounds[indicator_name]
+        axis.hist(
+            values,
+            bins=45,
+            color=color,
+            alpha=0.82,
+            edgecolor="white",
+            linewidth=0.25,
+        )
+        axis.axvline(
+            bounds["p02"],
+            color="#1F4E79",
+            linestyle="--",
+            linewidth=1.5,
+            label=f"P2 = {bounds['p02']:,.2f}",
+        )
+        axis.axvline(
+            bounds["p98"],
+            color="#C43C39",
+            linestyle="--",
+            linewidth=1.5,
+            label=f"P98 = {bounds['p98']:,.2f}",
+        )
+        axis.set_title(title, fontsize=11, fontweight="bold")
+        axis.set_xlabel(unit, fontsize=9)
+        axis.set_ylabel("Valid cells", fontsize=9)
+        axis.tick_params(labelsize=8)
+        axis.grid(axis="y", alpha=0.22, linewidth=0.6)
+        axis.legend(frameon=False, fontsize=8, loc="upper right")
+        for spine in ("top", "right"):
+            axis.spines[spine].set_visible(False)
+    figure.suptitle(
+        "Indicator distributions and robust P2–P98 scaling bounds",
+        fontsize=13,
+        fontweight="bold",
+    )
+    add_source_note(
+        figure,
+        "Source: Author's calculations from valid cells in the harmonised 30 m analysis rasters.",
+    )
+    figure.savefig(
+        figures / "figure_03_indicator_distributions.png",
+        dpi=260,
+        bbox_inches="tight",
+        facecolor="white",
+    )
+    plt.close(figure)
+
     valid_indices = np.flatnonzero(np.isfinite(susceptibility))
     sample_size = min(30_000, valid_indices.size)
     sample = random_generator.choice(valid_indices, size=sample_size, replace=False)
@@ -192,7 +253,7 @@ def create_analysis_figures(
         "Source: Author's calculations from the seven verified and normalized project indicators.",
     )
     figure.tight_layout(rect=(0, 0.025, 1, 1))
-    figure.savefig(figures / "figure_03_indicator_correlation.png", dpi=220)
+    figure.savefig(figures / "figure_04_indicator_correlation.png", dpi=220)
     plt.close(figure)
 
     figure, axis = plt.subplots(figsize=(10, 8))
@@ -223,7 +284,7 @@ def create_analysis_figures(
         "stated accuracy 1-10 km).",
     )
     figure.tight_layout(rect=(0, 0.025, 1, 1))
-    figure.savefig(figures / "figure_04_susceptibility_and_events.png", dpi=220)
+    figure.savefig(figures / "figure_05_susceptibility_and_events.png", dpi=220)
     plt.close(figure)
 
     class_colors = {
@@ -268,7 +329,7 @@ def create_analysis_figures(
         f"Classes are relative quartiles for {len(gns)} {division_name} GNs, not warnings.",
     )
     figure.tight_layout(rect=(0, 0.025, 1, 1))
-    figure.savefig(figures / "figure_05_final_gn_risk.png", dpi=220)
+    figure.savefig(figures / "figure_06_final_gn_risk.png", dpi=220)
     plt.close(figure)
 
     top = gns.nsmallest(10, "risk_rank").sort_values("risk_score")
@@ -303,7 +364,7 @@ def create_analysis_figures(
         "Source: Author's calculations from the verified project inputs; see DATA_SOURCES.md.",
     )
     figure.tight_layout(rect=(0, 0.025, 1, 1))
-    figure.savefig(figures / "figure_06_top_risk_components.png", dpi=220)
+    figure.savefig(figures / "figure_07_top_risk_components.png", dpi=220)
     plt.close(figure)
 
     stability = gns.sort_values("sensitivity_class_stability")
@@ -322,7 +383,7 @@ def create_analysis_figures(
         "susceptibility weights.",
     )
     figure.tight_layout(rect=(0, 0.025, 1, 1))
-    figure.savefig(figures / "figure_07_weight_sensitivity.png", dpi=220)
+    figure.savefig(figures / "figure_08_weight_sensitivity.png", dpi=220)
     plt.close(figure)
 
     workflow_steps = [
@@ -371,7 +432,7 @@ def create_analysis_figures(
     )
     figure.tight_layout(rect=(0, 0.025, 1, 1))
     figure.savefig(
-        figures / "figure_08_index_workflow.png",
+        figures / "figure_09_index_workflow.png",
         dpi=220,
         bbox_inches="tight",
     )

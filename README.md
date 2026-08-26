@@ -7,7 +7,7 @@ This repository builds a Location-Specific Landslide Risk Scoring Index for Hald
 - `outputs/tables/haldummulla_gn_risk_scores.csv`: final GN scores, ranks, classes and sensitivity results.
 - `outputs/rasters/landslide_susceptibility_0_100.tif`: 30 m physical susceptibility.
 - `outputs/vectors/haldummulla_gn_risk.gpkg`: GN-level vector results.
-- `outputs/figures/`: eight report-ready figures.
+- `outputs/figures/`: nine report-ready figures.
 - `data/raw/download_manifest.json`: source file sizes and SHA-256 hashes.
 - `outputs/tables/preprocessing_quality_audit.csv`: missing coverage, filling and robust-clipping audit.
 - `DATA_SOURCES.md`: source register, links and limitations.

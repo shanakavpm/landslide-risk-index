@@ -125,12 +125,13 @@ st.subheader("Analysis figures")
 figure_files = {
     "Study area and population": "figure_01_study_area_population.png",
     "Physical indicators": "figure_02_physical_indicators.png",
-    "Indicator correlation": "figure_03_indicator_correlation.png",
-    "Susceptibility and events": "figure_04_susceptibility_and_events.png",
-    "Final GN risk": "figure_05_final_gn_risk.png",
-    "Top risk components": "figure_06_top_risk_components.png",
-    "Weight sensitivity": "figure_07_weight_sensitivity.png",
-    "Index workflow": "figure_08_index_workflow.png",
+    "Indicator distributions": "figure_03_indicator_distributions.png",
+    "Indicator correlation": "figure_04_indicator_correlation.png",
+    "Susceptibility and events": "figure_05_susceptibility_and_events.png",
+    "Final GN risk": "figure_06_final_gn_risk.png",
+    "Top risk components": "figure_07_top_risk_components.png",
+    "Weight sensitivity": "figure_08_weight_sensitivity.png",
+    "Index workflow": "figure_09_index_workflow.png",
 }
 selected_figure = st.selectbox("Figure", list(figure_files))
 figure_filename = figure_files[selected_figure]
