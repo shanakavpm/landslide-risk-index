@@ -133,13 +133,13 @@ figure_files = {
     "Weight sensitivity": "figure_08_weight_sensitivity.png",
     "Index workflow": "figure_09_index_workflow.png",
 }
-selected_figure = st.selectbox("Figure", list(figure_files))
-figure_filename = figure_files[selected_figure]
-figure_path = FIGURES / figure_filename
-if figure_path.exists():
-    st.image(str(figure_path), width="stretch")
-else:
-    st.warning(f"Figure is not available: {figure_filename}")
+for tab, figure_filename in zip(st.tabs(list(figure_files)), figure_files.values(), strict=True):
+    with tab:
+        figure_path = FIGURES / figure_filename
+        if figure_path.exists():
+            st.image(str(figure_path), width="stretch")
+        else:
+            st.warning(f"Figure is not available: {figure_filename}")
 
 with st.expander("Method and intended use"):
     st.write(
